@@ -1,0 +1,115 @@
+grpa=[['INDIA',0],['AUSTRALIA',0],['NEWZEALAND',0],['KENYA',0]]
+grpb=[['WINDIES',0],['BANGLADESH',0],['ENGLAND',0],['SCOTLAND',0]]
+grpc=[['IRELAND',0],['AFGHANISHTAN',0],['PAKISTAN',0],['SRILANKA',0]]
+grpd=[['ZIMBABWE',0],['CANADA',0],['UAE',0],['NAMIBIA',0]]
+
+def play(listp):
+    for i in range(0,len(listp)):
+        for j in range(i+1,len(listp)):
+            if(listp[i]==listp[j]):
+                pass
+            else:
+                print("The match between", listp[i][0],"and ", listp[j][0])
+                point=eval(input("Enter 2 for win,1 for draw"))
+                if point==2:
+                    wd=input("winning team")
+                    if wd.lower()==listp[j][0].lower():
+                        listp[j][1]=listp[j][1]+2
+                    elif wd.lower()==listp[j][0].lower():
+                        listp[i][1]=listp[i][1]+2
+                elif point==1:
+                    listp[i][1]=listp[i][1]+1
+                    listp[j][1]=listp[j][1]+1
+                    
+                    
+
+
+"""def playe():
+    team1=input("Team name 1")
+    team2=input("Team name 2")
+    score=eval(input("Win(2) or loss(0) or draw(1)"))
+    win=input("winner")
+    if win.lower()==team1.lower():
+        grpe[team1.upper()]=grpe[team1.upper()]+score
+    elif win.lower()==team2.lower():
+        grpe[team2.upper()]=grpe[team2.upper()]+score
+        
+def playf():
+    team1=input("Team name 1")
+    team2=input("Team name 2")
+    score=eval(input("Win(2) or loss(0) or draw(1)"))
+    win=input("winner")
+    if win.lower()==team1.lower():
+        grpf[team1.upper()]=grpf[team1.upper()]+score
+    elif win.lower()==team2.lower():
+        grpf[team2.upper()]=grpf[team2.upper()]+score
+        
+def playg():
+    team1=input("Team name 1")
+    team2=input("Team name 2")
+    score=eval(input("Win(2) or loss(0) or draw(1)"))
+    win=input("winner")
+    if win.lower()==team1.lower():
+        grpa[team1.upper()]=grpa[team1.upper()]+score
+    elif win.lower()==team2.lower():
+        grpa[team2.upper()]=grpa[team2.upper()]+score
+"""        
+print("The groups along with their teams")
+print("Group A(0) : INDIA, AUSTRALIA, NEWZEALAND, KENYA")
+print("Group B(1) : WINDIES, BANGLADESH, ENGLAND, SCOTLAND")
+print("Group C(2) : IRELAND, AFGHANISHTAN, PAKISTAN, SRILANKA")
+print("Group D(3) : ZIMBABWE, CANADA, UAE, NAMIBIA")
+
+
+play(grpa)
+print(grpa)
+play(grpb)
+print(grpb)
+play(grpc)
+print(grpc)
+play(grpd)
+print(grpd)
+
+
+sorted_grpa = grpa[::-1]
+print(sorted_grpa)
+sorted_grpb = grpb[::-1]
+print(sorted_grpb)
+sorted_grpc = grpc[::-1]
+print(sorted_grpc)
+sorted_grpd = grpd[::-1]
+print(sorted_grpd)
+
+"""
+grpe={sorted_grpa[0][1]:0,sorted_grpa[1][1]:0,sorted_grpb[0][1]:0,sorted_grpb[1][1]:0}
+grpf={sorted_grpc[0][1]:0,sorted_grpc[1][1]:0,sorted_grpd[0][1]:0,sorted_grpd[1][1]:0}
+print(grpe)
+print(grpf)
+
+
+
+while(1):
+    for i in range(1,7):
+        playe()
+    for i in range(1,7):
+        playf()
+    break
+        
+
+sorted_grpe = sorted(((value, key) for (key,value) in grpe.items()),reverse=True)
+print(sorted_grpe)
+sorted_grpf = sorted(((value, key) for (key,value) in grpf.items()),reverse=True)
+print(sorted_grpf) 
+
+grpg={sorted_grpe[0][1]:0,sorted_grpe[1][1]:0,sorted_grpf[0][1]:0,sorted_grpf[1][1]:0}
+print(grpg)
+while(1):
+    for i in range(1,7):
+        playg()
+    break    
+
+sorted_grpg = sorted(((value, key) for (key,value) in grpg.items()),reverse=True)
+print(sorted_grpg)
+
+print ("The winner is :")
+print (sorted_grpg[0][1])"""
