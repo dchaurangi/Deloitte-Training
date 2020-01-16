@@ -1,0 +1,326 @@
+1) nested functions
+		select last_name, upper(concat(substr(last_name,1,8),' US'))
+		from employees
+		where department_id = 60
+2) NVL function - converts null value to zero
+select first_name, employee_id, nvl(commission_pct,0)
+from employees
+3) use NVL along witha where clause - for a particular job_id
+ select first_name, employee_id, job_id , nvl(commission_pct*10,0),((salary*12)+(salary*12*nvl(commission_pct*10,0))) AN_SAL
+from employees
+where instr(job_id,'CLERK',3) > 0
+4) nvl2
+select last_name, salary, commission_pct, nvl2(commission_pct, 'SAL+COM','SAL') income 
+from employees
+where department_id IN (50,80);
+5) nullif function
+select first_name, LENGTH(first_name) "expr1",
+last_name,LENGTH(last_name) "expr2", nullif(LENGTH(first_name), LENGTH(last_name)) ressult 
+from employees; 
+6) Coalesce function - returns null when specified
+select last_name,manager_id,commission_pct, coalesce(commission_pct,manager_id,-1) comm
+from employees
+order by commission_pct;
+7) case Expression:
+
+select last_name, job_id, salary,
+case job_id when 'IT_PROG' then 10*salary
+            when 'ST_CLERK' then 20*salary
+            when 'SA_REP' then  15*salary
+else        salary end "Revised Salary"
+from employees
+8) Decode function: 
+select last_name, job_id,department_id, salary,
+DECODE(department_id, 30, 10*salary,
+                      50, 20*salary,
+                      80, 5*salary, salary)
+                    Revised_salary
+from employees;
+9) select last_name, salary,
+DECODE (trunc(salary/2000, 0), 0, 0.00,
+                               1, 0.09,
+                               2, 0.20,
+                               3, 0.30,
+                               4, 0.40,
+                               5, 0.42,
+                               6, 0.44,
+                                  0.45) TAX_RATE
+from employees
+where department_id = 80;
+
+
+10) stddev function
+'select  trunc(STDDEV(salary)) "STANDARD DEVIATION" 
+from employees
+11) count number of employees in each department
+select department_id, count(employee_id)
+11) on statement 
+select e.employee_id, e.last_name, e.department_id,d.department_id
+from employees e join departments d
+on (e.department_id = d.department_id);
+12) using ON, join 
+select employee_id, city, department_name
+from employees e
+join departments d
+on d.department_id = e.department_id
+join locations l
+on  d.location_id = l.location_id
+AND l.city = 'Seattle'
+from employees
+
+13) select outer.last_name, outer.department_id
+from employees outer 
+where  exists
+(select 'X' from employees 
+where department_id = outer.department_id
+and hire_date > outer.hire_date
+AND salary > outer.salary);
+14) select e.employee_id,e.last_name, e.department_id, d.department_name
+from employees e  join departments d 
+on d.department_name in (select department_name from departments d where d.department_id = e.department_id)
+
+(or)
+
+select employee_id, last_name,
+(select department_name from departments d where e.department_id = d.department_id) department
+from employees e
+order by department
+
+
+13) Chronounits, LocalDate, DateTimeFormatter are used for finding, parsing dates.
+group by department_id
+14) cartesian product is when join is invalid
+15) 1) Enclose subqueries in parenthesis.
+16) select last_name, job_id, salary
+from employees
+where job_id = (select job_id from employees where employee_id = 141)
+AND salary < (select salary from employees where employee_id = 143);
+17) select last_name, job_id, salary
+from employees 
+where salary < (select avg(salary) from employees);
+18) multirow comparison operato- in, any, all
+19) use of any 
+select last_name, employee_id,job_id,salary
+from employees
+where salary < ANY (select salary from employees where job_id = 'IT_PROG')
+AND job_id<>'IT_PROG'
+20) select department_name,sum(salary)
+from departments join employees  using (department_id)
+group by department_name 
+having sum(salary)>(1/8)*(select sum(salary) from employees);
+
+1) Union operation - without duplication.
+select employee_id, job_id
+from employees
+union
+select employee_id, job_id
+from job_history;
+
+2) Union all  - without duplication
+select employee_id, job_id
+from employees
+union All
+select employee_id, job_id
+from job_history
+order by employee_id;
+3) intersect operator
+select employee_id, job_id
+from employees
+intersect
+select employee_id, job_id
+from job_history
+order by employee_id;
+
+4) minus opeartor 
+select employee_id, job_id
+from employees
+minus
+select employee_id, job_id
+from job_history
+order by employee_id;
+
+5) select last_name,employee_id,department_id, to_number(null)location, hire_date, to_char(null)
+from employees
+union 
+select to_char(null),to_number(null),department_id, location_id, to_date(null), department_name
+from departments
+order by department_id;
+
+6) use of column noprint
+ column a_dummy NOPRINT
+select 'sing' AS "My DREAM", 3 a_dummy
+from dual
+union
+select 'I''d like to teach',1 a_dummy
+from dual
+union
+select 'the world to', 2 a_dummy
+from dual
+order by a_dummy
+
+7) data Manipulation Language - DML
+8) Insert a new row
+insert into  departments(department_id,department_name, manager_id, location_id)
+values(71,'Public Relations',100,1700);
+8) insert a row
+insert into employees(employee_id,first_name,last_name,email,phone_number,hire_date,job_id,salary,
+commission_pct,manager_id,department_id)
+values(237,'John','banks','JBS','1234567',sysdate,'AC_ACCOUNT',6900,null,205,71);
+select * from employees;
+9) Insert with user arguements
+insert into departments
+(department_id,department_name,location_id)
+values (&department_id, '&department_name',&location);
+10) update a row
+update employees
+set department_id =  70
+where employee_id = 113;
+11) Updating using subquery
+update employees
+set job_id = (select job_id
+              from employees
+                where employee_id = 205),
+    salary = (select salary
+                from employees
+                where employee_id = 205)
+where employee_id = 114;
+select * from employees
+12) delete rows based on another table
+delete from employees
+where department_id = (select department_id
+                        from employees
+                        where department_id = 71 );
+select * from employees;
+13) delete from employees 
+where department_id =
+(select department_id 
+from departments 
+where location_id =
+(select location_id 
+from locations
+where city = 'Hyderabad'));
+14) SAVEPOINT * ROLLBACK TO
+    update locations 
+    set city = 'Chennai'
+    where city = 'Hyderabad';
+    SAVEPOINT CityUpdate;
+    insert into locations(location_id,Street_address,postal_code,city,state_province,country_id)
+    values(3456,to_char(null),400004,nagpur,to_char(null),30);
+    ROLLBACK TO CityUpdate;
+15) after commit all savepoints are deleted.
+
+14) DDL - data definition language - cannot be undone as easily as DML
+15) Insert into with a subquery
+insert into
+(select employee_id, last_name,email,hire_date,job_id,salary,department_id
+from employees
+where department_id = 50)
+values(99999,'taylor','Dtaylor',to_date('07-jun-99','DD-MON-RR'),'ST_CLERK',5000,50);
+16) DD-MON-RR - RR is for the century format
+17) Datatypes of the table
+varchar2, char, number(p,s), date, long, clob, raw & long raw ...
+18) creating a table
+create  TABLE dept
+(deptno number(2),
+dname varchar2(14),
+loc varchar2(13),
+create_date DATE DEFAULT sysdate);
+describe dept;
+
+
+
+program
+-------------------------------------------------------------------------------------------
+
+
+ create table roles
+(role_id number(6) constraint role_role_id Primary key,
+role_name varchar2(14) constraint role_role_name unique); 
+
+create table Users
+(id number(4) constraint user_id PRIMARY KEY,
+ last_name varchar2(14),
+user_name varchar2(20) constraint user_username UNIQUE 
+                        constraint user_username_nn not null,
+pass_word varchar2(20) CONSTRAINT check_password CHECK (length(pass_word)>8),
+e_mail varchar2(20) constraint users_email UNIQUE 
+                    constraint  users_email_nn not null,
+role_id number(6),
+constraint users_role_id FOREIGN key(role_id)REFERENCES ROLES(ROLE_ID)); 
+
+insert into USERS(ID,LAST_NAME,USER_NAME,PASS_WORD,E_MAIL,ROLE_ID,mobile_num)
+VALUES(1004,'Rita','Rita1004','123456789','Rita10004',20,12345678890);
+
+
+------------------------------------------------------------------------------------------------
+
+19) Views are made out of other tables witha certain where clause.
+create or replace view empvu80
+(id_number, name, sal,department_id)
+as select employee_id, first_name || ' ' || last_name, salary, department_id
+from employees 
+where department_id = 80;
+20) create or replace view empvu20
+as select *
+from employees 
+where department_id = 20;
+with check option constraint empvu20_ck;
+select * from empvu20;
+21) with read only - so that dml operations are not used
+create or replace view empvu10
+(employee_number, employee_name,job_title)
+as select employee_id, last_name, job_id
+from employees 
+where department_id = 20
+with read only;
+22) Creating index -  it's used to loop through the data faster. all primary keys are by definition indexes.
+create index ind
+on users(last_name);
+
+23) create or replace view usersview
+(id, name,user_name)
+as select ID,last_name,user_name from users;
+create synonym u_sum
+for userview;
+
+24) to find the objects created by the user: 
+select object_name, object_type, status
+from user_objects
+order by object_type;
+
+25) user defined tables
+select table_name
+from user_tables;
+
+26) To find the column properties
+select column_name, data_type, data_length, data_precision, data_scale, nullable
+from user_tab_columns
+where table_name = 'EMPLOYEES'
+27) Info about constraints
+select constraint_name, constraint_type, search_condition, r_constraint_name, delete_rule, status
+from user_constraints
+where table_name = 'EMPLOYEES'
+
+also
+
+select constraint_name, column_name
+from user_cons_columns
+where table_name = 'USERS'
+
+28) Info regarding views
+/*select DISTINCT view_name from user_views;*/
+select text from user_views
+where view_name = 'EMPVU20' // user defined view
+
+29) To print info regarding the user defined sequences
+select sequence_name, min_value, max_value, increment_by, last_number
+from  user_sequences;
+ 
+30) creating a complex view
+create or replace view dept_sum_vu
+(name, minsal,maxsal,avgsal)
+as select d.department_name, min(e.salary),max(e.salary),avg(e.salary)
+from employees e join departments d
+on (e.employee_id = d.department_id)
+group by d.department_name;
+select * from dept_sum_vu;

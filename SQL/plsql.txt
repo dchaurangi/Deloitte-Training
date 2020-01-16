@@ -1,0 +1,663 @@
+PL/SQL
+1) sammple program
+set serveroutput on;
+DECLARE
+message VARCHAR2(20):= 'Hello World!';
+a number:=10;
+BEGIN 
+a:=a+1;
+dbms_output.put_line(message);
+dbms_output.put_line(a);
+END;
+/
+2) IF condition
+set serveroutput on;
+DECLARE
+a number:=1;
+
+BEGIN
+if mod(a,2) = 0 then
+dbms_output.put_line(a);
+else 
+dbms_output.put_line(a+1);
+END iF;
+END;
+/
+3) looping statement in PL SQL
+set serveroutput on;
+Declare 
+i number:=1;
+begin
+loop 
+insert into T1 values(i,i);
+i:=i+1;
+exit when i>100;
+end loop;
+end;
+/
+select * from T1;
+4) for loop
+set serveroutput on;
+Declare 
+i number:=1;
+n number;
+begin
+for n in 1..100 loop 
+insert into T1 values(i,i+2);
+i:=i+1;
+end loop;
+end;
+/
+select * from T1;
+5) Use case statement
+set serveroutput on;
+Declare 
+n_pct employees.commission_pct%TYPE;
+v_eval varchar2(10);
+n_emp_id employees.employee_id%TYPE:=145;
+BEGIN
+select commission_pct
+into n_pct
+from employees
+where employee_id = n_emp_id;
+case n_pct
+when 0 then 
+v_eval:='N/A';
+WHEN 0.1 THEN
+v_eval:='LOW';
+when 0.4 then
+v_eval:='HIGH';
+else
+v_eval:='FAIR';
+end case;
+dbms_output.put_line('EMPLOYEE '|| n_emp_id || 'Commission ' || to_char(n_pct)||
+'which is ' || v_eval);
+END;
+/
+
+
+6) get roll name with given user last_name
+/*select role_name from roles where role_id = (select role_id from users where last_name = 'Ram');*/
+set serveroutput on;
+Declare 
+u_name users.last_name%TYPE:='Rahim';
+u_role varchar2(20);
+u_id users.id%TYPE;
+e_eval varchar2(20);
+BEGIN
+select role_id into u_id from users where last_name = u_name;
+select role_name
+into u_role
+from roles
+where role_id = u_id;
+
+case u_role
+when 'MNG' then 
+e_eval:='Manager';
+WHEN 'ASST_MNG' THEN
+e_eval:='Assistant manager';
+when 'ENG' then
+e_eval:='Engineer';
+else
+e_eval:='Assistant Engineer';
+end case;
+dbms_output.put_line('User: '|| u_name || ' -  Role is ' || e_eval);
+END;
+/
+7) Assigning the tax to a particulaar salary.
+--select * from tax;
+SET SERVEROUTPUT ON SIZE 1000000;
+<<parent>>
+DECLARE
+  emp_name tax.last_name%TYPE:='&name1';
+  v_eval   varchar2(10);
+  emp_gross tax.salary%TYPE;
+BEGIN
+
+  SELECT salary
+  INTO emp_gross
+  FROM tax
+  WHERE last_name = emp_name;
+ 
+  -- evalutate commission percentage
+  CASE
+    WHEN emp_gross<20000 THEN
+      v_eval := 0.1*emp_gross;
+    WHEN 20000<=emp_gross and emp_gross<40000  THEN
+      v_eval := 0.2*emp_gross;
+    WHEN 40000<=emp_gross THEN
+      v_eval := 0.3*emp_gross;
+    ELSE
+      v_eval := 'Invalid';
+  END CASE;
+  -- print commission evaluation
+  DBMS_OUTPUT.PUT_LINE('Employee ' || emp_name || 
+                       ' taxes = ' || v_eval ||
+                      ' on gross '   || emp_gross);
+
+END;
+/
+
+8) Using nested begin
+set serveroutput ON size 1000000000;
+<<parent>>
+declare 
+n_emp_id employees.employee_id%TYPE:=&emp_id1;
+Begin 
+<<child>>
+declare 
+n_emp_id employees.employee_id%type:=&emmp_id2;
+v_name employees.first_name%type;
+begin 
+select first_name
+into v_name
+from employees
+where employee_id = parent.n_emp_id;
+dbms_output.put_line('First name of employee ' || parent.n_emp_id || ' is ' || child.v_name);
+exception
+when no_data_found then
+dbms_output.put_line('Employee '|| parent.n_emp_id || ' not found');
+end;
+end;
+/
+
+
+9) Use cursor as an iterator in PL SQL
+SET SERVEROUTPUT ON SIZE 1000000;
+DECLARE
+  -- declare a cursor
+  CURSOR cur_chief IS
+      SELECT first_name,
+             last_name,
+             department_name
+      FROM employees e
+      INNER JOIN departments d ON d.manager_id = e.employee_id;
+ 
+  r_chief cur_chief%ROWTYPE;
+BEGIN
+  OPEN cur_chief;
+  LOOP
+    -- fetch information from cursor into record
+    FETCH cur_chief INTO r_chief;
+
+    EXIT WHEN cur_chief%NOTFOUND;
+ 
+    -- print department - chief
+    DBMS_OUTPUT.PUT_LINE(r_chief.department_name || ' - ' ||
+                         r_chief.first_name || ',' ||
+                         r_chief.last_name);
+  END LOOP;
+  -- close cursor cur_chief
+  CLOSE cur_chief;
+END;
+/
+
+10) swapping the numbers uing cursor
+
+--truncate table t1;
+--set serveroutput on;
+--Declare 
+--i number:=1;
+--n number;
+--begin
+--for n in 1..100 loop 
+--insert into T1 values(i,i+1);
+--i:=i+1;
+--end loop;
+--end;
+--/
+--cl scr;
+
+SET SERVEROUTPUT ON SIZE 1000000;
+DECLARE
+  -- declare a cursor
+  a number;
+  b number;
+  CURSOR cur_chief IS
+  select num_a, num_b
+  from T1
+  for update;
+  Begin
+  open cur_chief;
+  loop
+  fetch cur_chief into a,b;
+  exit when cur_chief%notfound;
+  delete from T1 where current of cur_chief;
+  insert into T1 values(b,a);
+  end loop;
+  close cur_chief;
+  end;
+  /
+  select * from T1;
+
+11) Find the employees with hire_date>2005
+
+cl scr;
+SET SERVEROUTPUT ON SIZE 1000000;
+DECLARE
+e_name employees.last_name%type;
+h_date employees.hire_date%type;
+salary employees.salary%type;
+tempsal employees.salary%type;
+  -- declare a cursor
+  CURSOR cur_chief IS
+  select last_name, hire_date,salary
+  from employees
+  where hire_date > '31-DEC-2005';
+  Begin
+     DBMS_OUTPUT.PUT_LINE('Name     hire Date    old salary      new salary ');
+  open cur_chief;
+  loop
+  fetch cur_chief into e_name,h_date,salary;
+  exit when cur_chief%NOTFOUND;
+  tempsal:=salary;
+  DBMS_OUTPUT.PUT_LINE(e_name ||'  ,  '||h_date ||'  ,  '||salary||' ,   '||tempsal);
+  end loop;
+  close cur_chief;
+  end;
+  /
+  
+
+12) Find the most & least experienced person in the company:
+cl scr;
+SET SERVEROUTPUT ON SIZE 1000000;
+DECLARE
+e_name employees.last_name%type;
+h_date employees.hire_date%type;
+  -- declare a cursor
+  CURSOR cur_chief IS
+    select last_name, hire_date
+from (
+SELECT last_name, hire_date
+from employees
+order by hire_date asc)
+where ROWNUM<=1;
+CURSOR cur_chief1 IS
+    select last_name, hire_date
+from (
+SELECT last_name, hire_date
+from employees
+order by hire_date desc)
+where ROWNUM<=1;
+  Begin
+  open cur_chief;
+  fetch cur_chief into e_name,h_date;
+  DBMS_OUTPUT.PUT_LINE(e_name||' '||h_date);
+  close cur_chief;
+  open cur_chief1;
+  fetch cur_chief1 into e_name,h_date;
+  DBMS_OUTPUT.PUT_LINE(e_name||' '||h_date);
+  close cur_chief1;
+  end;
+  /
+
+
+13) Create recods in pl sql
+SET SERVEROUTPUT ON SIZE 1000000;
+DECLARE
+  r_emp employees%ROWTYPE;
+  n_emp_id  employees.employee_id%TYPE := 200;
+BEGIN
+  SELECT *
+  INTO r_emp
+  FROM employees
+  WHERE employee_id = n_emp_id;
+  -- print out the employee's first name
+  DBMS_OUTPUT.PUT_LINE(r_emp.first_name);
+END;
+/
+14) Create records and loop through using cursor
+cl scr;
+SET SERVEROUTPUT ON SIZE 1000000;
+DECLARE
+  type u_rec is RECORD(
+    name users.last_name%TYPE,
+    role roles.role_name%type
+  );
+  u_rec1 u_rec;
+  cursor cur_chief is
+  select u.last_name, r.role_name
+  from users u join roles r 
+  on u.role_id = r.role_id;
+  
+BEGIN
+ open cur_chief;
+   loop
+   fetch cur_chief into u_rec1;
+   exit when cur_chief%notfound;
+  dbms_output.put_line(u_rec1.name||'  '||u_rec1.role);
+  end loop;
+  close cur_chief;
+END;
+/
+
+15) Assign another record to a record.
+
+ cl scr;
+SET serveroutput ON SIZE 1000000;
+DECLARE
+  TYPE t_name IS RECORD(
+    first_name employees.first_name%TYPE,
+    last_name employees.last_name%TYPE
+  );
+  r_name      t_name;
+  r_name2     t_name;
+  r_name_null t_name;
+  n_emp_id employees.employee_id%TYPE := 200;
+BEGIN
+  -- assign employee's infomation to record
+  SELECT first_name,
+         last_name
+  INTO r_name
+  FROM employees
+  WHERE employee_id = n_emp_id;
+ 
+  -- assign record to another record
+  r_name2 := r_name;
+  -- print out the employee's name
+  DBMS_OUTPUT.PUT_LINE(r_name2.first_name || ',' || r_name2.last_name);
+ 
+  -- assign record to NULL
+  r_name2 := r_name_null; 
+ 
+  -- check NULL for each individual field
+  IF r_name2.first_name IS NULL AND
+     r_name2.last_name IS NULL THEN
+    DBMS_OUTPUT.PUT_LINE('Record r_name2 is NULL');
+  END IF;
+ 
+END;
+/
+16) joining three tables
+select employee_id,last_name,salary,department_name,department_id,city 
+from 
+(select department_name,department_id, city 
+from departments d join locations l 
+on d.location_id = l.location_id)k
+join employees e
+USING (department_id)
+order by e.employee_id asc;
+
+
+17) Joining Employees, departments, locations using records and printing them.
+
+cl scr;
+SET SERVEROUTPUT ON SIZE 1000000;
+DECLARE
+  type e_rec is RECORD(
+  id employees.employee_id%type,
+  name employees.last_name%TYPE,
+  salary employees.salary%TYPE
+  );
+  type d_rec is RECORD(
+  d_name departments.department_name%TYPE,
+  d_id departments.department_id%type
+  );
+  type l_rec is RECORD(
+  city locations.city%type
+  );
+  type comp_rec is RECORD(
+  e e_rec,
+  d d_rec,
+  l l_rec);
+  comp comp_rec;
+  cursor cur_chief is
+  select employee_id,last_name,salary,department_name,department_id,city 
+from 
+(select department_name,department_id, city 
+from departments d join locations l 
+on d.location_id = l.location_id)k
+join employees e
+USING (department_id)
+order by e.employee_id asc;
+
+BEGIN 
+open cur_chief;
+loop
+fetch cur_chief into comp.e.id,comp.e.name,comp.e.salary,comp.d.d_name,comp.d.d_id,comp.l.city;
+exit when cur_chief%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE(comp.e.id||'                   '||comp.e.name||'                   '||comp.e.salary||'                 '||comp.d.d_name||'                 '||comp.d.d_id||'                   '||comp.l.city);
+end loop;
+close cur_chief;
+end;
+/
+
+
+--------------------------------------------------------------------------------------------------------------------
+
+
+Day - 10
+1) Handling exceptions in pl sql
+DECLARE
+    l_name customers.NAME%TYPE;
+    l_customer_id customers.customer_id%TYPE := &customer_id;
+BEGIN
+    -- get the customer
+    SELECT NAME INTO l_name
+    FROM customers
+    WHERE customer_id = l_customer_id;
+    
+    -- show the customer name   
+    dbms_output.put_line('customer name is ' || l_name);
+ 
+    EXCEPTION 
+        WHEN NO_DATA_FOUND THEN
+            dbms_output.put_line('Customer ' || l_customer_id ||  ' does not exist');
+END;
+/
+
+2) Handling more than one exception
+cl scr;
+set serveroutput on size 1000000000;
+DECLARE
+    l_name employees.last_name%TYPE;
+    l_id employees.employee_id%TYPE := &employee_id;
+BEGIN
+    -- get the customer
+    SELECT last_name INTO l_name
+    FROM employees
+    WHERE employee_id <= l_id;
+    
+    -- show the customer name   
+    dbms_output.put_line('customer name is ' || l_name);
+ 
+    EXCEPTION 
+        WHEN NO_DATA_FOUND THEN
+            dbms_output.put_line('Employee ' || l_id ||  ' does not exist');
+        when too_many_rows then 
+        DBMS_OUTPUT.PUT_LINE('Tow many rows');
+END;
+/
+
+3) Salary exception 
+
+cl scr;
+set serveroutput on;
+declare 
+salary_too_high exception;
+pragma exception_init(salary_too_high, -20007);
+salary number(20):=&salary;
+e_name employees.last_name%TYPE;
+e_id number(20);
+max_sal number(20);
+
+
+Begin
+select e.employee_id,last_name,j.max_salary
+into e_id, e_name,max_sal
+from employees e join jobs j 
+on e.job_id =j.job_id
+where e.employee_id = &id;
+if salary>max_sal then 
+raise salary_too_high;
+--else 
+--update employees
+--set salary = 
+end if;
+exception 
+when salary_too_high then 
+dbms_output.put_line('Salary is greater than '||max_sal);
+end;
+/
+
+4) declare procedure & use it: 
+
+cl scr;
+set serveroutput on;
+create or replace 
+procedure square (N int) is
+begin 
+dbms_output.put_line('The square of the number is: '||N*N);
+END;
+/
+begin
+ square(&N);
+end;
+
+5) Another example 4
+
+cl scr;
+set SERVEROUTPUT ON;
+create or replace 
+procedure findNameSalary(ID int) is
+e_name employees.last_name%type;
+e_sal employees.salary%type;
+begin 
+select last_name, salary 
+into e_name,e_sal
+from employees
+where employee_id = ID;
+dbms_output.put_line(e_name||' - '||e_sal);
+end;
+/
+begin 
+findNameSalary(&ID); 
+end;
+
+
+6) use out in a procedure
+
+cl scr;
+set serveroutput on;
+create or replace 
+procedure sum_ab(a int, b int, c out int) is
+begin
+c:= a+ b;
+end;
+/
+declare
+c int;
+begin 
+sum_ab(&a,&b,c);
+dbms_output.put_line('The sum is: '||c);
+end;
+/
+
+7) Another example for 6)
+
+cl scr;
+set SERVEROUTPUT ON;
+create or replace
+procedure findName(ID number, name out VARCHAR2)  is
+begin
+select last_name
+into name
+from employees
+where employee_id = ID;
+end;
+/
+declare 
+name VARCHAR2(20);
+begin
+findName(&ID,name);
+dbms_output.put_line('The name of the person is: '||name);
+end;
+
+
+8) Functions in PL SQl
+
+create or replace 
+function add_two(A int, B int)
+return int is
+Begin 
+return(A+B);
+end;
+/
+begin 
+dbms_output.put_line(add_two(1,2));
+end;
+
+9) Another example for functions
+
+cl scr;
+set serveroutput on;
+create or replace 
+function totSalary return int is
+s_sum number;
+begin
+select sum(salary)
+into s_sum
+from employees;
+return s_sum;
+end;
+/
+begin 
+DBMS_OUTPUT.PUT_LINE('The total salary is: '||totSalary());
+end;
+
+10) increment salary using functions using pl sql
+cl scr;
+set SERVEROUTPUT ON;
+create or replace 
+function incSal(ID int) return int is
+sal number;
+e_name varchar2(20);
+begin
+select salary,last_name
+into sal,e_name 
+from employees
+where employee_id = ID;
+DBMS_OUTPUT.PUT_LINE('Employee Name: '||e_name||'; Old Salary: '||sal);
+sal:=sal+100;
+return sal;
+end;
+/
+begin 
+DBMS_OUTPUT.PUT_line('The incremented salary is: '||incSal(100));
+end;
+/
+
+11) Declare a trigger and use it!
+
+CREATE TABLE audits (
+      audit_id         NUMBER constraint audit_id_pk PRIMARY KEY,
+      table_name       VARCHAR2(255),
+      transaction_name VARCHAR2(10),
+      by_user          VARCHAR2(30),
+      transaction_date DATE
+);
+set SERVEROUT on;
+
+CREATE OR REPLACE TRIGGER customers_audit_trg
+    AFTER 
+    UPDATE OR DELETE 
+    ON users
+    FOR EACH ROW    
+DECLARE
+   l_transaction VARCHAR2(10);
+BEGIN
+   -- determine the transaction type
+   l_transaction := CASE  
+         WHEN UPDATING THEN 'UPDATE'
+         WHEN DELETING THEN 'DELETE'
+   END;
+ 
+   -- insert a row into the audit table   
+   INSERT INTO audits (audit_id,table_name, transaction_name, by_user, transaction_date)
+   VALUES(USERS_SQ.nextval,'USERS', l_transaction, USER, SYSDATE);
+END;
+/
+update users
+set pass_word = '123456901'
+where id = 1000;
+--after updating check the audit table;
