@@ -1,0 +1,41 @@
+trackId 	albumid 	name 	
+1	1	For Those About To Rock (We Salute You)
+2	2	Balls to the Wall
+3	3	Fast As a Shark
+4	3	Restless and Wild
+5	3	Princess of the Dawn
+6	1	Put The Finger On You
+7	1	Let's Get It Up
+8	1	Inject The Venom
+9	1	Snowballed
+10	1	Evil Walks
+2819	226	Battlestar Galactica: The Story So Far
+2820	227	Occupation / Precipice
+2821	227	Exodus, Pt. 1
+2822	227	Exodus, Pt. 2
+2823	227	Collaborators
+2824	227	Torn
+2825	227	A Measure of Salvation
+2826	227	Hero
+2827	227	Unfinished Business
+2828	227	The Passage
+3	3	Fast As a Shark
+4	3	Restless and Wild
+5	3	Princess of the Dawn
+23	5	Walk On Water
+24	5	Love In An Elevator
+25	5	Rag Doll
+26	5	What It Takes
+27	5	Dude (Looks Like A Lady)
+28	5	Janie's Got A Gun
+29	5	Cryin'
+3403	272	Intoitus: Adorate Deum
+3404	273	Miserere mei, Deus
+3405	274	Canon and Gigue in D Major: I. Canon
+3406	275	Concerto No. 1 in E Major, RV 269 "Spring": I. Allegro
+3407	276	Concerto for 2 Violins in D Minor, BWV 1043: I. Vivace
+3408	277	Aria Mit 30 Veränderungen, BWV 988 "Goldberg Variations": Aria
+3409	278	Suite for Solo Cello No. 1 in G Major, BWV 1007: I. Prélude
+3410	279	The Messiah: Behold, I Tell You a Mystery... The Trumpet Shall Sound
+3411	280	Solomon HWV 67: The Arrival of the Queen of Sheba
+3412	281	"Eine Kleine Nachtmusik" Serenade In G, K. 525: I. Allegro
